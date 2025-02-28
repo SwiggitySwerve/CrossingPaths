@@ -1,8 +1,13 @@
 ﻿using CrossingPaths;
+using CrossingPaths.Infrastructure;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
-Console.Write("Input Flight Path: ");
-var input = Console.ReadLine() ?? string.Empty;
+// Create host using the shared setup
+var host = Host.CreateDefaultBuilder(args)
+    .ConfigureServices() // Uses the extension method from ServiceSetup
+    .ConfigureLogging()  // Uses the extension method from ServiceSetup
+    .Build();
 
-var output = new FlightPathHandler().IsFlightPlanCrossing(input);
-
-Console.WriteLine($"Crash Prediction: {output}");
+var app = host.Services.GetRequiredService<FlightPathApplication>();
+await app.RunAsync();

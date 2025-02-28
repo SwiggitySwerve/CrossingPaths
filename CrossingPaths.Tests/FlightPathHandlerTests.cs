@@ -1,73 +1,214 @@
+using CrossingPaths.Handlers;
+using CrossingPaths.Infrastructure;
+using CrossingPaths.Interfaces.Handlers;
+using CrossingPaths.Interfaces.Services;
+using CrossingPaths.Services;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Shouldly;
+using System;
+using System.Linq;
+using Xunit;
 
-namespace CrossingPaths.Tests;
-
-public class FlightPathHandlerTests
+namespace CrossingPaths.Tests
 {
-    private readonly FlightPathHandler _flightPathHandler = new();
-
-    [Fact]
-    public void GivenExample1_ShouldReturnFalse()
+    public class FlightPathHandlerTests
     {
-        // Arrange
-        var input = "NES";
+        private readonly IHost _host;
 
-        // Act
-        var output = _flightPathHandler.IsFlightPlanCrossing(input);
+        public FlightPathHandlerTests()
+        {
+            _host = ServiceSetup.CreateTestHost();
+        }
 
-        // Assert
-        output.ShouldBeFalse();
-    }
-    
-    [Fact]
-    public void GivenExample2_ShouldReturnTrue()
-    {
-        // Arrange
-        var input = "NESWW";
+        [Fact]
+        public void GivenExample1_ShouldReturnFalse()
+        {
+            var flightPathHandler = _host.Services.GetRequiredService<IFlightPathHandler>();
+            var flightTrackerService = _host.Services.GetRequiredService<IFlightTrackerService>();
 
-        // Act
-        var output = _flightPathHandler.IsFlightPlanCrossing(input);
+            var input = "NES";
+            var expectedVisitedCount = 4;
 
-        // Assert
-        output.ShouldBeTrue();
-    }
-    
-    [Fact]
-    public void GivenLongUShapedPath_ShouldReturnFalse()
-    {
-        // Arrange
-        var input = "NNNNNNWSSSS";
+            var output = flightPathHandler.IsFlightPlanCrossing(input);
 
-        // Act
-        var output = _flightPathHandler.IsFlightPlanCrossing(input);
+            output.ShouldBeFalse();
+            flightTrackerService.Visited.Count.ShouldBe(expectedVisitedCount);
 
-        // Assert
-        output.ShouldBeFalse();
-    }
-    
-    [Fact]
-    public void GivenLoop_ShouldReturnTrue()
-    {
-        // Arrange
-        var input = "NNNNNNWSSSSE";
+            int processedChars = flightTrackerService.Visited.Count - 1;
+            processedChars.ShouldBe(input.ToString().Length);
+        }
 
-        // Act
-        var output = _flightPathHandler.IsFlightPlanCrossing(input);
+        [Fact]
+        public void GivenExample2_ShouldReturnTrue()
+        {
+            var flightPathHandler = _host.Services.GetRequiredService<IFlightPathHandler>();
+            var flightTrackerService = _host.Services.GetRequiredService<IFlightTrackerService>();
 
-        // Assert
-        output.ShouldBeTrue();
-    }
-    
-    [Fact]
-    public void GivenLoopStartingSouth_ShouldReturnTrue()
-    {
-        // Arrange
-        var input = "SWNNNNNNWSSSSE";
+            var input = "NESWW";
+            var expectedExitPoint = 4;
 
-        // Act
-        var output = _flightPathHandler.IsFlightPlanCrossing(input);
+            var output = flightPathHandler.IsFlightPlanCrossing(input);
 
-        // Assert
-        output.ShouldBeTrue();
+            output.ShouldBeTrue();
+            flightTrackerService.Visited.Count.ShouldBe(expectedExitPoint);
+            flightTrackerService.Visited.Count.ShouldBeLessThan(input.ToString().Length + 1);
+        }
+
+        [Fact]
+        public void GivenLongUShapedPath_ShouldReturnFalse()
+        {
+            var flightPathHandler = _host.Services.GetRequiredService<IFlightPathHandler>();
+            var flightTrackerService = _host.Services.GetRequiredService<IFlightTrackerService>();
+
+            var input = "NNNNNNWSSSS";
+            var expectedVisitedCount = 12;
+
+            var output = flightPathHandler.IsFlightPlanCrossing(input);
+
+            output.ShouldBeFalse();
+            flightTrackerService.Visited.Count.ShouldBe(expectedVisitedCount);
+
+            int processedChars = flightTrackerService.Visited.Count - 1;
+            processedChars.ShouldBe(input.ToString().Length);
+        }
+
+        [Fact]
+        public void GivenLoop_ShouldReturnTrue()
+        {
+            var flightPathHandler = _host.Services.GetRequiredService<IFlightPathHandler>();
+            var flightTrackerService = _host.Services.GetRequiredService<IFlightTrackerService>();
+
+            var input = "NNNNNNWSSSSE";
+
+            var output = flightPathHandler.IsFlightPlanCrossing(input);
+
+            output.ShouldBeTrue();
+            flightTrackerService.Visited.Count.ShouldBeLessThan(input.ToString().Length + 1);
+
+            int expectedProcessedChars = flightTrackerService.Visited.Count - 1;
+            expectedProcessedChars.ShouldBeLessThanOrEqualTo(input.ToString().Length);
+        }
+
+        [Fact]
+        public void VerifyCrossingPath()
+        {
+            var flightPathHandler = _host.Services.GetRequiredService<IFlightPathHandler>();
+            var flightTrackerService = _host.Services.GetRequiredService<IFlightTrackerService>();
+
+            var input = "NNEESSWWNNEE";
+            var crossingPoint = 8;
+
+            var output = flightPathHandler.IsFlightPlanCrossing(input);
+
+            output.ShouldBeTrue();
+            flightTrackerService.Visited.Count.ShouldBe(crossingPoint);
+
+            int processedChars = flightTrackerService.Visited.Count - 1;
+            processedChars.ShouldBe(7);
+            processedChars.ShouldBeLessThan(input.ToString().Length);
+        }
+
+        [Fact]
+        public void VerifyEarlyCrossingDetection()
+        {
+            var flightPathHandler = _host.Services.GetRequiredService<IFlightPathHandler>();
+            var flightTrackerService = _host.Services.GetRequiredService<IFlightTrackerService>();
+
+            var input = "NESWN";
+
+            var output = flightPathHandler.IsFlightPlanCrossing(input);
+
+            output.ShouldBeTrue();
+            flightTrackerService.Visited.Count.ShouldBe(4);
+
+            int processedChars = flightTrackerService.Visited.Count - 1;
+            processedChars.ShouldBe(3);
+            processedChars.ShouldBeLessThan(input.ToString().Length);
+        }
+
+        [Fact]
+        public void VerifySquarePathCrossing()
+        {
+            var flightPathHandler = _host.Services.GetRequiredService<IFlightPathHandler>();
+            var flightTrackerService = _host.Services.GetRequiredService<IFlightTrackerService>();
+
+            var input = "NESW";
+
+            var output = flightPathHandler.IsFlightPlanCrossing(input);
+
+            output.ShouldBeTrue();
+            flightTrackerService.Visited.Count.ShouldBe(4);
+
+            int processedChars = flightTrackerService.Visited.Count - 1;
+            processedChars.ShouldBe(3);
+            processedChars.ShouldBeLessThan(input.ToString().Length);
+        }
+
+        [Fact]
+        public void CharacterProcessingCountValidation()
+        {
+            {
+                var flightPathHandler = _host.Services.GetRequiredService<IFlightPathHandler>();
+                var flightTrackerService = _host.Services.GetRequiredService<IFlightTrackerService>();
+
+                var nonCrossingPath = "NESENNW";
+                var nonCrossingResult = flightPathHandler.IsFlightPlanCrossing(nonCrossingPath);
+                nonCrossingResult.ShouldBeFalse();
+                int nonCrossingProcessed = flightTrackerService.Visited.Count - 1;
+                nonCrossingProcessed.ShouldBe(nonCrossingPath.ToString().Length);
+            }
+
+            {
+                var flightPathHandler = _host.Services.GetRequiredService<IFlightPathHandler>();
+                var flightTrackerService = _host.Services.GetRequiredService<IFlightTrackerService>();
+
+                var crossingPath = "NESWN";
+                var crossingResult = flightPathHandler.IsFlightPlanCrossing(crossingPath);
+                crossingResult.ShouldBeTrue();
+
+                flightTrackerService.Visited.Count.ShouldBe(10);
+            }
+        }
+
+        [Fact]
+        public void GivenLargeNonIntersectingPath_ShouldHandleEfficientlyAndReturnFalse()
+        {
+            var flightPathHandler = _host.Services.GetRequiredService<IFlightPathHandler>();
+            var flightTrackerService = _host.Services.GetRequiredService<IFlightTrackerService>();
+
+            var input = TestHelper.GenerateLargeNonIntersectingSpiralPath(TestHelper.ITERATIONS);
+
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+            var output = flightPathHandler.IsFlightPlanCrossing(input);
+            stopwatch.Stop();
+
+            output.ShouldBeFalse();
+            flightTrackerService.Visited.Count.ShouldBe(input.Length + 1);
+
+            Console.WriteLine($"Processed {input.Length} directions in {stopwatch.ElapsedMilliseconds}ms");
+
+            stopwatch.ElapsedMilliseconds.ShouldBeLessThan(100);
+        }
+
+        [Fact]
+        public void GivenLargeZigzagPath_ShouldHandleEfficientlyAndReturnFalse()
+        {
+            var flightPathHandler = _host.Services.GetRequiredService<IFlightPathHandler>();
+            var flightTrackerService = _host.Services.GetRequiredService<IFlightTrackerService>();
+
+            var input = TestHelper.GenerateLargeNonIntersectingZigzagPath(TestHelper.ITERATIONS);
+
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+            var output = flightPathHandler.IsFlightPlanCrossing(input);
+            stopwatch.Stop();
+
+            output.ShouldBeFalse();
+            flightTrackerService.Visited.Count.ShouldBe(input.Length + 1);
+
+            Console.WriteLine($"Processed {input.Length} directions in {stopwatch.ElapsedMilliseconds}ms");
+
+            stopwatch.ElapsedMilliseconds.ShouldBeLessThan(100);
+        }
     }
 }
