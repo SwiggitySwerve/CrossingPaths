@@ -1,74 +1,109 @@
 using CrossingPaths.Handlers;
+using CrossingPaths.Infrastructure;
+using CrossingPaths.Interfaces.Handlers;
+using CrossingPaths.Interfaces.Services;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Shouldly;
+using System;
+using Xunit;
 
-namespace CrossingPaths.Tests;
-
-public class FlightPathHandlerTests
+namespace CrossingPaths.Tests
 {
-    private readonly FlightPathHandler _flightPathHandler = new();
-
-    [Fact]
-    public void GivenExample1_ShouldReturnFalse()
+    public class FlightPathHandlerTests
     {
-        // Arrange
-        var input = "NES";
+        private readonly FlightPathHandler _flightPathHandler;
+        private readonly IHost _host;
 
-        // Act
-        var output = _flightPathHandler.IsFlightPlanCrossing(input);
+        public FlightPathHandlerTests()
+        {
+            // Use the shared service setup class to create a test host
+            _host = ServiceSetup.CreateTestHost();
 
-        // Assert
-        output.ShouldBeFalse();
-    }
-    
-    [Fact]
-    public void GivenExample2_ShouldReturnTrue()
-    {
-        // Arrange
-        var input = "NESWW";
+            // Get the handler from the host's service provider
+            _flightPathHandler = (FlightPathHandler)_host.Services.GetRequiredService<IFlightPathHandler>();
+        }
 
-        // Act
-        var output = _flightPathHandler.IsFlightPlanCrossing(input);
+        [Fact]
+        public void GivenExample1_ShouldReturnFalse()
+        {
+            // Arrange
+            EnsureFlightTrackerService();
+            var input = "NES";
 
-        // Assert
-        output.ShouldBeTrue();
-    }
-    
-    [Fact]
-    public void GivenLongUShapedPath_ShouldReturnFalse()
-    {
-        // Arrange
-        var input = "NNNNNNWSSSS";
+            // Act
+            var output = _flightPathHandler.IsFlightPlanCrossing(input);
 
-        // Act
-        var output = _flightPathHandler.IsFlightPlanCrossing(input);
+            // Assert
+            output.ShouldBeFalse();
+        }
 
-        // Assert
-        output.ShouldBeFalse();
-    }
-    
-    [Fact]
-    public void GivenLoop_ShouldReturnTrue()
-    {
-        // Arrange
-        var input = "NNNNNNWSSSSE";
+        [Fact]
+        public void GivenExample2_ShouldReturnTrue()
+        {
+            // Arrange
+            EnsureFlightTrackerService();
+            var input = "NESWW";
 
-        // Act
-        var output = _flightPathHandler.IsFlightPlanCrossing(input);
+            // Act
+            var output = _flightPathHandler.IsFlightPlanCrossing(input);
 
-        // Assert
-        output.ShouldBeTrue();
-    }
-    
-    [Fact]
-    public void GivenLoopStartingSouth_ShouldReturnTrue()
-    {
-        // Arrange
-        var input = "SWNNNNNNWSSSSE";
+            // Assert
+            output.ShouldBeTrue();
+        }
 
-        // Act
-        var output = _flightPathHandler.IsFlightPlanCrossing(input);
+        [Fact]
+        public void GivenLongUShapedPath_ShouldReturnFalse()
+        {
+            // Arrange
+            EnsureFlightTrackerService();
+            var input = "NNNNNNWSSSS";
 
-        // Assert
-        output.ShouldBeTrue();
+            // Act
+            var output = _flightPathHandler.IsFlightPlanCrossing(input);
+
+            // Assert
+            output.ShouldBeFalse();
+        }
+
+        [Fact]
+        public void GivenLoop_ShouldReturnTrue()
+        {
+            // Arrange
+            EnsureFlightTrackerService();
+            var input = "NNNNNNWSSSSE";
+
+            // Act
+            var output = _flightPathHandler.IsFlightPlanCrossing(input);
+
+            // Assert
+            output.ShouldBeTrue();
+        }
+
+        [Fact]
+        public void GivenLoopStartingSouth_ShouldReturnTrue()
+        {
+            // Arrange
+            EnsureFlightTrackerService();
+            var input = "SWNNNNNNWSSSSE";
+
+            // Act
+            var output = _flightPathHandler.IsFlightPlanCrossing(input);
+
+            // Assert
+            output.ShouldBeTrue();
+        }
+
+        private void EnsureFlightTrackerService()
+        {
+            // Get the FlightTrackerService from DI
+            var trackerService = _host.Services.GetRequiredService<IFlightTrackerService>();
+
+            // Set it on the handler if needed
+            var trackerServiceField = typeof(FlightPathHandler).GetField("_flightTrackerService",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
+            trackerServiceField?.SetValue(_flightPathHandler, trackerService);
+        }
     }
 }
