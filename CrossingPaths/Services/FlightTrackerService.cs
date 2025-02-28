@@ -9,7 +9,7 @@ namespace CrossingPaths.Services
 {
     public class FlightTrackerService : IFlightTrackerService
     {
-        public List<(int, int)> Visited { get; } = new();
+        public ICollection<(int, int)> Visited { get; } = new HashSet<(int, int)>();
 
         public void PlotCoordinate((int, int) coordinate)
         {
