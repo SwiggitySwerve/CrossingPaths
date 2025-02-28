@@ -13,7 +13,7 @@ namespace CrossingPaths.Infrastructure
     /// A reusable setup class for configuring dependency injection
     /// that can be used by both tests and the main application.
     /// </summary>
-    public static class ServiceSetup
+    public static class Startup
     {
         /// <summary>
         /// Configures the host builder with all required services.

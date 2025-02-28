@@ -16,19 +16,8 @@ namespace CrossingPaths.Services
 
         public (int, int) TravelDirection(char instruction)
         {
-            switch (instruction)
-            {
-                case 'N':
-                    return (0, 1);
-                case 'S':
-                    return (0, -1);
-                case 'E':
-                    return (1, 0);
-                case 'W':
-                    return (-1, 0);
-                default:
-                    return (0, 0);
-            }
+            //TODO: Implement here
+            throw new NotImplementedException();
         }
     }
 }
