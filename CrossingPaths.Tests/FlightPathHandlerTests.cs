@@ -1,3 +1,4 @@
+using CrossingPaths.Handlers;
 using Shouldly;
 
 namespace CrossingPaths.Tests;
