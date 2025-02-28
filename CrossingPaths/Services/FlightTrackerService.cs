@@ -9,11 +9,11 @@ namespace CrossingPaths.Services
 {
     public class FlightTrackerService : IFlightTrackerService
     {
-        public List<(int, int)> Visited { get; }
+        public List<(int, int)> Visited { get; } = new();
 
         public void PlotCoordinate((int, int) coordinate)
         {
-            throw new NotImplementedException();
+            Visited.Add(coordinate);
         }
     }
 }

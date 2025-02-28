@@ -18,9 +18,11 @@ namespace CrossingPaths.Handlers
         private (int, int) Location = (0, 0);
 
         public FlightPathHandler(IFlightDirectionService flightDirectionService,
+            IFlightTrackerService flightTrackerService,
             ILogger<FlightPathHandler> logger)
         {
             _flightDirectionService = flightDirectionService;
+            _flightTrackerService = flightTrackerService;
             _logger = logger;
         }
 
@@ -36,7 +38,12 @@ namespace CrossingPaths.Handlers
                 var direction = _flightDirectionService.TravelDirection(instruction);
                 Location.Item1 += direction.Item1;
                 Location.Item2 += direction.Item2;
+                if (_flightTrackerService.Visited.Contains(Location))
+                {
+                    return true;
+                }
                 _flightTrackerService.PlotCoordinate(Location);
+
             }
 
             _logger.LogInformation("Flight path analysis result: {Result}", result);

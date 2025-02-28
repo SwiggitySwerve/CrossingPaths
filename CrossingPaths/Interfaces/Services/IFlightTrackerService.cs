@@ -8,6 +8,7 @@ namespace CrossingPaths.Interfaces.Services
 {
     public interface IFlightTrackerService
     {
+        public List<(int,int)> Visited { get; }
         public void PlotCoordinate((int, int) coordinate);
     }
 }

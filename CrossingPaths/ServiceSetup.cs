@@ -41,9 +41,9 @@ namespace CrossingPaths.Infrastructure
         public static IServiceCollection RegisterCommonServices(this IServiceCollection services)
         {
             // Register core services
-            services.AddTransient<IFlightPathHandler, FlightPathHandler>();
-            services.AddTransient<IFlightDirectionService, FlightDirectionService>();
-            services.AddTransient<IFlightTrackerService, FlightTrackerService>();
+            services.AddScoped<IFlightPathHandler, FlightPathHandler>();
+            services.AddScoped<IFlightDirectionService, FlightDirectionService>();
+            services.AddScoped<IFlightTrackerService, FlightTrackerService>();
 
             // Register I/O services
             services.AddTransient<IInputService, ConsoleInputService>();
