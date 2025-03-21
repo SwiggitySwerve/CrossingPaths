@@ -9,8 +9,6 @@ namespace CrossingPaths.Services
 {
     public class FlightTrackerService : IFlightTrackerService
     {
-        public ICollection<(int, int)> Visited { get; } = new List<(int, int)>();
-
         public void PlotCoordinate((int, int) coordinate)
         {
             //TODO: Implement here
