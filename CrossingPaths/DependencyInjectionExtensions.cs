@@ -13,7 +13,7 @@ namespace CrossingPaths.Infrastructure
     /// A reusable setup class for configuring dependency injection
     /// that can be used by both tests and the main application.
     /// </summary>
-    public static class ServiceSetup
+    public static class DependencyInjectionExtensions
     {
         /// <summary>
         /// Configures the host builder with all required services.
@@ -47,7 +47,6 @@ namespace CrossingPaths.Infrastructure
 
             // Register I/O services
             services.AddTransient<IInputService, ConsoleInputService>();
-            services.AddTransient<IOutputService, ConsoleOutputService>();
 
             return services;
         }

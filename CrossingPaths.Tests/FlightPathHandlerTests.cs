@@ -18,7 +18,7 @@ namespace CrossingPaths.Tests
 
         public FlightPathHandlerTests()
         {
-            _host = ServiceSetup.CreateTestHost();
+            _host = DependencyInjectionExtensions.CreateTestHost();
         }
 
         private T GetService<T>() => _host.Services.GetRequiredService<T>();

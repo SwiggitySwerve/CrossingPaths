@@ -13,18 +13,15 @@ namespace CrossingPaths
     {
         private readonly IFlightPathHandler _flightPathHandler;
         private readonly IInputService _inputService;
-        private readonly IOutputService _outputService;
         private readonly ILogger<FlightPathApplication> _logger;
 
         public FlightPathApplication(
             IFlightPathHandler flightPathHandler,
             IInputService inputService,
-            IOutputService outputService,
             ILogger<FlightPathApplication> logger)
         {
             _flightPathHandler = flightPathHandler;
             _inputService = inputService;
-            _outputService = outputService;
             _logger = logger;
         }
 
@@ -35,9 +32,9 @@ namespace CrossingPaths
             var flightPath = _inputService.GetInput();
 
             var result = _flightPathHandler.IsFlightPlanCrossing(flightPath);
-            _outputService.DisplayResult($"\nCrash Prediction: {result}\n");
-
+            _logger.LogInformation($"\nCrash Prediction: {result}\n");
             _logger.LogInformation("Flight Path Application completed");
+
             return Task.CompletedTask;
         }
     }
