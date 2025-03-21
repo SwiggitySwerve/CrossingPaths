@@ -35,7 +35,7 @@ namespace CrossingPaths
             var flightPath = _inputService.GetInput();
 
             var result = _flightPathHandler.IsFlightPlanCrossing(flightPath);
-            _outputService.DisplayResult($"Crash Prediction: {result}");
+            _outputService.DisplayResult($"\nCrash Prediction: {result}\n");
 
             _logger.LogInformation("Flight Path Application completed");
             return Task.CompletedTask;
