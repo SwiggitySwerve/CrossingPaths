@@ -177,7 +177,7 @@ namespace CrossingPaths.Tests
             var flightPathHandler = _host.Services.GetRequiredService<IFlightPathHandler>();
             var flightTrackerService = _host.Services.GetRequiredService<IFlightTrackerService>();
 
-            var input = TestHelper.GenerateLargeNonIntersectingSpiralPath(TestHelper.ITERATIONS);
+            var input = TestHelper.GenerateLargeNonIntersectingSpiralPath();
 
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             var output = flightPathHandler.IsFlightPlanCrossing(input);
@@ -197,7 +197,7 @@ namespace CrossingPaths.Tests
             var flightPathHandler = _host.Services.GetRequiredService<IFlightPathHandler>();
             var flightTrackerService = _host.Services.GetRequiredService<IFlightTrackerService>();
 
-            var input = TestHelper.GenerateLargeNonIntersectingZigzagPath(TestHelper.ITERATIONS);
+            var input = TestHelper.GenerateLargeNonIntersectingZigzagPath();
 
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             var output = flightPathHandler.IsFlightPlanCrossing(input);

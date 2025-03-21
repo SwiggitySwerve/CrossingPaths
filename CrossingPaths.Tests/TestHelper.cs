@@ -13,102 +13,55 @@ namespace CrossingPaths.Tests
         /// </summary>
         /// <param name="size">The approximate number of steps to generate</param>
         /// <returns>A string of directions (N, E, S, W) forming a spiral</returns>
-        public static string GenerateLargeNonIntersectingSpiralPath(int size)
+        public static string GenerateLargeNonIntersectingSpiralPath()
         {
-            if (size <= 0)
-                throw new ArgumentException("Size must be positive", nameof(size));
+            StringBuilder spiral = new StringBuilder(ITERATIONS);
+            int segment = 0;  // Each loop iteration defines one segment  
 
-            char[] directions = new char[size];
-
-            // We'll create an outward spiral pattern:
-            // First go N for 1 step, then E for 1 step, 
-            // Then S for 2 steps, W for 2 steps, 
-            // Then N for 3 steps, E for 3 steps,
-            // And so on, increasing the step count by 1 after each pair of directions
-
-            int currentIndex = 0;
-            int segmentLength = 1;
-            int segmentsCompleted = 0;
-
-            while (currentIndex < size)
+            // Build segments until we have at least ITERATIONS steps.  
+            while (spiral.Length < ITERATIONS)
             {
-                // Determine current direction based on segment count
-                char currentDirection;
-                switch (segmentsCompleted % 4)
+                // Determine the number of steps for this segment (each segment grows by one step each time).  
+                int steps = segment + 1;
+                if (segment % 2 == 0)
                 {
-                    case 0:
-                        currentDirection = 'N';
-                        break;
-                    case 1:
-                        currentDirection = 'E';
-                        break;
-                    case 2:
-                        currentDirection = 'S';
-                        break;
-                    case 3:
-                        currentDirection = 'W';
-                        break;
-                    default:
-                        throw new InvalidOperationException("Unexpected segment count");
+                    // Even segments: add 'N' repeated steps then 'E' repeated steps.  
+                    spiral.Append(new string('N', steps));
+                    spiral.Append(new string('E', steps));
                 }
-
-                // Fill in the current segment with the appropriate direction
-                for (int i = 0; i < segmentLength && currentIndex < size; i++)
+                else
                 {
-                    directions[currentIndex++] = currentDirection;
+                    // Odd segments: add 'S' repeated steps then 'W' repeated steps.  
+                    spiral.Append(new string('S', steps));
+                    spiral.Append(new string('W', steps));
                 }
-
-                segmentsCompleted++;
-
-                // Increase segment length every 2 segments (after completing a pair)
-                if (segmentsCompleted % 2 == 0)
-                {
-                    segmentLength++;
-                }
+                segment++;
             }
 
-            return new string(directions);
+            // If the spiral exceeds the specified ITERATIONS, truncate it.  
+            if (spiral.Length > ITERATIONS)
+            {
+                spiral.Length = ITERATIONS;
+            }
+
+            return spiral.ToString();
         }
 
-        /// <summary>
-        /// Generates a zigzag path that never intersects itself.
-        /// The zigzag moves east and then north repeatedly, always moving in a new area.
-        /// </summary>
-        /// <param name="size">The number of steps to generate</param>
-        /// <returns>A string of directions (N, E, S, W) forming a zigzag</returns>
-        public static string GenerateLargeNonIntersectingZigzagPath(int size)
+        /// <summary>  
+        /// Generates a zigzag path that never intersects itself.  
+        /// This version uses a minimal repeating pattern: "NE" repeated over and over.  
+        /// For example, for ITERATIONS = 8, it produces "NENENENE".  
+        /// </summary>  
+        /// <returns>A string of directions (N, E) forming a zigzag</returns>  
+        public static string GenerateLargeNonIntersectingZigzagPath()
         {
-            if (size <= 0)
-                throw new ArgumentException("Size must be positive", nameof(size));
-
+            int size = ITERATIONS;
             char[] directions = new char[size];
 
-            // We'll create a zigzag pattern that alternates between:
-            // 1. Going East for a long distance
-            // 2. Going North for 1 step
-            // 3. Going West for a long distance
-            // 4. Going North for 1 step
-            // This ensures we never cross our path
-
-            int currentIndex = 0;
-            int horizontalSteps = Math.Max(1, size / 200); // Adjust this value based on desired zigzag width
-            bool goingEast = true;
-
-            while (currentIndex < size)
+            // Simply alternate 'N' and 'E'  
+            for (int i = 0; i < size; i++)
             {
-                // Fill in horizontal segment
-                char horizontalDirection = goingEast ? 'E' : 'W';
-                for (int i = 0; i < horizontalSteps && currentIndex < size; i++)
-                {
-                    directions[currentIndex++] = horizontalDirection;
-                }
-
-                // Add a single step north if we still have room
-                if (currentIndex < size)
-                {
-                    directions[currentIndex++] = 'N';
-                    goingEast = !goingEast; // Switch horizontal direction
-                }
+                directions[i] = (i % 2 == 0) ? 'N' : 'E';
             }
 
             return new string(directions);
