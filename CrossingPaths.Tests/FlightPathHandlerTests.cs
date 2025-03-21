@@ -21,11 +21,13 @@ namespace CrossingPaths.Tests
             _host = ServiceSetup.CreateTestHost();
         }
 
+        private T GetService<T>() => _host.Services.GetRequiredService<T>();
+
         [Fact]
         public void GivenExample1_ShouldReturnFalse()
         {
-            var flightPathHandler = _host.Services.GetRequiredService<IFlightPathHandler>();
-            var flightTrackerService = _host.Services.GetRequiredService<IFlightTrackerService>();
+            var flightPathHandler = GetService<IFlightPathHandler>();
+            var flightTrackerService = GetService<IFlightTrackerService>();
 
             var input = "NES";
             var expectedVisitedCount = 4;
@@ -42,8 +44,8 @@ namespace CrossingPaths.Tests
         [Fact]
         public void GivenExample2_ShouldReturnTrue()
         {
-            var flightPathHandler = _host.Services.GetRequiredService<IFlightPathHandler>();
-            var flightTrackerService = _host.Services.GetRequiredService<IFlightTrackerService>();
+            var flightPathHandler = GetService<IFlightPathHandler>();
+            var flightTrackerService = GetService<IFlightTrackerService>();
 
             var input = "NESWW";
             var expectedExitPoint = 4;
@@ -58,8 +60,8 @@ namespace CrossingPaths.Tests
         [Fact]
         public void GivenLongUShapedPath_ShouldReturnFalse()
         {
-            var flightPathHandler = _host.Services.GetRequiredService<IFlightPathHandler>();
-            var flightTrackerService = _host.Services.GetRequiredService<IFlightTrackerService>();
+            var flightPathHandler = GetService<IFlightPathHandler>();
+            var flightTrackerService = GetService<IFlightTrackerService>();
 
             var input = "NNNNNNWSSSS";
             var expectedVisitedCount = 12;
@@ -76,8 +78,8 @@ namespace CrossingPaths.Tests
         [Fact]
         public void GivenLoop_ShouldReturnTrue()
         {
-            var flightPathHandler = _host.Services.GetRequiredService<IFlightPathHandler>();
-            var flightTrackerService = _host.Services.GetRequiredService<IFlightTrackerService>();
+            var flightPathHandler = GetService<IFlightPathHandler>();
+            var flightTrackerService = GetService<IFlightTrackerService>();
 
             var input = "NNNNNNWSSSSE";
 
@@ -93,8 +95,8 @@ namespace CrossingPaths.Tests
         [Fact]
         public void VerifyCrossingPath()
         {
-            var flightPathHandler = _host.Services.GetRequiredService<IFlightPathHandler>();
-            var flightTrackerService = _host.Services.GetRequiredService<IFlightTrackerService>();
+            var flightPathHandler = GetService<IFlightPathHandler>();
+            var flightTrackerService = GetService<IFlightTrackerService>();
 
             var input = "NNEESSWWNNEE";
             var crossingPoint = 8;
@@ -112,8 +114,8 @@ namespace CrossingPaths.Tests
         [Fact]
         public void VerifyEarlyCrossingDetection()
         {
-            var flightPathHandler = _host.Services.GetRequiredService<IFlightPathHandler>();
-            var flightTrackerService = _host.Services.GetRequiredService<IFlightTrackerService>();
+            var flightPathHandler = GetService<IFlightPathHandler>();
+            var flightTrackerService = GetService<IFlightTrackerService>();
 
             var input = "NESWN";
 
@@ -130,8 +132,8 @@ namespace CrossingPaths.Tests
         [Fact]
         public void VerifySquarePathCrossing()
         {
-            var flightPathHandler = _host.Services.GetRequiredService<IFlightPathHandler>();
-            var flightTrackerService = _host.Services.GetRequiredService<IFlightTrackerService>();
+            var flightPathHandler = GetService<IFlightPathHandler>();
+            var flightTrackerService = GetService<IFlightTrackerService>();
 
             var input = "NESW";
 
@@ -149,8 +151,8 @@ namespace CrossingPaths.Tests
         public void CharacterProcessingCountValidation()
         {
             {
-                var flightPathHandler = _host.Services.GetRequiredService<IFlightPathHandler>();
-                var flightTrackerService = _host.Services.GetRequiredService<IFlightTrackerService>();
+                var flightPathHandler = GetService<IFlightPathHandler>();
+                var flightTrackerService = GetService<IFlightTrackerService>();
 
                 var nonCrossingPath = "NESENNW";
                 var nonCrossingResult = flightPathHandler.IsFlightPlanCrossing(nonCrossingPath);
@@ -160,8 +162,8 @@ namespace CrossingPaths.Tests
             }
 
             {
-                var flightPathHandler = _host.Services.GetRequiredService<IFlightPathHandler>();
-                var flightTrackerService = _host.Services.GetRequiredService<IFlightTrackerService>();
+                var flightPathHandler = GetService<IFlightPathHandler>();
+                var flightTrackerService = GetService<IFlightTrackerService>();
 
                 var crossingPath = "NESWN";
                 var crossingResult = flightPathHandler.IsFlightPlanCrossing(crossingPath);
@@ -174,8 +176,8 @@ namespace CrossingPaths.Tests
         [Fact]
         public void GivenLargeNonIntersectingPath_ShouldHandleEfficientlyAndReturnFalse()
         {
-            var flightPathHandler = _host.Services.GetRequiredService<IFlightPathHandler>();
-            var flightTrackerService = _host.Services.GetRequiredService<IFlightTrackerService>();
+            var flightPathHandler = GetService<IFlightPathHandler>();
+            var flightTrackerService = GetService<IFlightTrackerService>();
 
             var input = TestHelper.GenerateLargeNonIntersectingSpiralPath();
 
@@ -194,8 +196,8 @@ namespace CrossingPaths.Tests
         [Fact]
         public void GivenLargeZigzagPath_ShouldHandleEfficientlyAndReturnFalse()
         {
-            var flightPathHandler = _host.Services.GetRequiredService<IFlightPathHandler>();
-            var flightTrackerService = _host.Services.GetRequiredService<IFlightTrackerService>();
+            var flightPathHandler = GetService<IFlightPathHandler>();
+            var flightTrackerService = GetService<IFlightTrackerService>();
 
             var input = TestHelper.GenerateLargeNonIntersectingZigzagPath();
 
