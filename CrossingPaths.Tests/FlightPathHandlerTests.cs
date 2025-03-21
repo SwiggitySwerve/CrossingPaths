@@ -18,7 +18,7 @@ namespace CrossingPaths.Tests
 
         public FlightPathHandlerTests()
         {
-            _host = Startup.CreateTestHost();
+            _host = ServiceSetup.CreateTestHost();
         }
 
         [Fact]
